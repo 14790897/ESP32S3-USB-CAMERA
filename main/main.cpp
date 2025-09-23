@@ -17,13 +17,16 @@ extern "C" {
 #include "esp_err.h"
 #include "esp_timer.h"
 #include "esp_camera.h"
-#include "tinyusb.h"
+#include "tusb.h"
 #include "class/video/video.h"
 #include "esp_heap_caps.h"
 }
 #include "usb_descriptors.h"
 
 static const char *TAG = "USB_UVC_CAMERA";
+
+// TinyUSB definitions
+#define BOARD_TUD_RHPORT   0
 
 // OV2640 GPIO configuration for DVP interface
 #define PWDN_GPIO_NUM -1
@@ -85,9 +88,9 @@ static SemaphoreHandle_t frame_ready_sem = NULL;
 // UVC format descriptors
 static const uint8_t desc_uvc_format[] = {
     // Format descriptor (MJPEG)
-    TUD_VIDEO_DESC_CS_FMT_MJPEG(1, 1, 1),
+    TUD_VIDEO_DESC_CS_VS_FMT_MJPEG(1, 1, 1, 1, 0, 0, 0, 0),
     // Frame descriptor (VGA: 640x480)
-    TUD_VIDEO_DESC_CS_FRM_MJPEG_CONT(1, 640, 480, 666667, 5000000, 333333),
+    TUD_VIDEO_DESC_CS_VS_FRM_MJPEG_CONT(1, 0, 640, 480, 640*480*16, 640*480*16*30, 640*480*2, 333333, 333333, 1000000, 333333),
 };
 
 // Initialize camera
@@ -162,9 +165,10 @@ extern "C" void tud_video_frame_complete_cb(uint_fast8_t ctl_idx)
     (void)ctl_idx;
 }
 
-extern "C" int tud_video_commit_cb(uint_fast8_t ctl_idx, video_probe_and_commit_control_t const *parameters)
+extern "C" int tud_video_commit_cb(uint_fast8_t ctl_idx, uint_fast8_t stm_idx, video_probe_and_commit_control_t const *parameters)
 {
     (void)ctl_idx;
+    (void)stm_idx;
     (void)parameters;
     
     ESP_LOGI(TAG, "UVC stream commit");
@@ -274,15 +278,14 @@ extern "C" void app_main(void)
     
     // Initialize TinyUSB
     ESP_LOGI(TAG, "Initializing USB...");
-    const tinyusb_config_t tusb_cfg = {
-        .device_descriptor = &desc_device,
-        .string_descriptor = string_desc_arr,
-        .string_descriptor_count = sizeof(string_desc_arr) / sizeof(string_desc_arr[0]),
-        .external_phy = false,
-        .configuration_descriptor = desc_configuration,
-    };
     
-    ret = tinyusb_driver_install(&tusb_cfg);
+    // Initialize TinyUSB device stack
+    ret = ESP_OK;
+    if (!tud_init(BOARD_TUD_RHPORT)) {
+        ESP_LOGE(TAG, "Failed to initialize TinyUSB device");
+        ret = ESP_FAIL;
+    }
+    
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "Failed to install TinyUSB driver");
         return;

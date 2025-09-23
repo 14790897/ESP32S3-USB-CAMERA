@@ -3,4 +3,5 @@ dependencies:
     version: '>=5.0.0'
   espressif/esp32-camera:
     version: ^2.0.0
-
+  espressif/tinyusb:
+    version: ^0.15.0

@@ -90,3 +90,4 @@ flash_download_tool_*.exe
 *.app
 
 components/*
+managed_components/*
