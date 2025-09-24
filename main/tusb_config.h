@@ -58,50 +58,55 @@
 #endif
 
 #ifndef CFG_TUSB_DEBUG
-#define CFG_TUSB_DEBUG        0
+#define CFG_TUSB_DEBUG 2 // Enable detailed debugging
 #endif
 
-// Enable Device stack
-#define CFG_TUD_ENABLED       1
+      // Enable Device stack
+#define CFG_TUD_ENABLED 1
 
-// Default is max speed that hardware controller could support with on-chip PHY
-#define CFG_TUD_MAX_SPEED     BOARD_TUD_MAX_SPEED
+      // Default is max speed that hardware controller could support with on-chip PHY
+#define CFG_TUD_MAX_SPEED BOARD_TUD_MAX_SPEED
 
-/* USB DMA on some MCUs can only access a specific SRAM region with restriction on alignment.
- * Tinyusb use follows macros to declare transferring memory so that they can be put
- * into those specific section.
- * e.g
- * - CFG_TUSB_MEM SECTION : __attribute__ (( section(".usb_ram") ))
- * - CFG_TUSB_MEM_ALIGN   : __attribute__ ((aligned(4)))
- */
+      /* USB DMA on some MCUs can only access a specific SRAM region with restriction on alignment.
+       * Tinyusb use follows macros to declare transferring memory so that they can be put
+       * into those specific section.
+       * e.g
+       * - CFG_TUSB_MEM SECTION : __attribute__ (( section(".usb_ram") ))
+       * - CFG_TUSB_MEM_ALIGN   : __attribute__ ((aligned(4)))
+       */
 #ifndef CFG_TUSB_MEM_SECTION
 #define CFG_TUSB_MEM_SECTION
 #endif
 
 #ifndef CFG_TUSB_MEM_ALIGN
-#define CFG_TUSB_MEM_ALIGN        __attribute__ ((aligned(4)))
+#define CFG_TUSB_MEM_ALIGN __attribute__((aligned(4)))
 #endif
 
-//--------------------------------------------------------------------
-// DEVICE CONFIGURATION
-//--------------------------------------------------------------------
+      //--------------------------------------------------------------------
+      // DEVICE CONFIGURATION
+      //--------------------------------------------------------------------
 
 #ifndef CFG_TUD_ENDPOINT0_SIZE
-#define CFG_TUD_ENDPOINT0_SIZE    64
+#define CFG_TUD_ENDPOINT0_SIZE 64
 #endif
 
-//------------- CLASS -------------//
-// The number of video control interfaces
-#define CFG_TUD_VIDEO            1
+      //------------- CLASS -------------//
+      // Enable TinyUSB debug output
+#ifndef CFG_TUSB_DEBUG
+#define CFG_TUSB_DEBUG 2 // Enable detailed debugging
+#endif
 
-// The number of video streaming interfaces
-#define CFG_TUD_VIDEO_STREAMING  1
+      // The number of video control interfaces
+#define CFG_TUD_VIDEO 1
 
-// video streaming endpoint size
-#define CFG_TUD_VIDEO_STREAMING_EP_BUFSIZE  256
+      // The number of video streaming interfaces
+#define CFG_TUD_VIDEO_STREAMING 1
 
-// use bulk endpoint for streaming interface
-#define CFG_TUD_VIDEO_STREAMING_BULK 0
+      // video streaming endpoint size (increase for better performance)
+#define CFG_TUD_VIDEO_STREAMING_EP_BUFSIZE 1024
+
+      // use bulk endpoint for streaming interface
+#define CFG_TUD_VIDEO_STREAMING_BULK 1 // Enable bulk endpoints for UVC
 
 #ifdef __cplusplus
  }
