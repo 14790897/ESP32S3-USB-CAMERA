@@ -37,7 +37,7 @@ extern "C"
     7)
 
 #define TUD_VIDEO_CAPTURE_DESC_UNCOMPR(itfnum, stridx, epin, epsize)                                                                                    \
-  TUD_VIDEO_DESC_IAD(itfnum, 2, stridx),\ 
+  TUD_VIDEO_DESC_IAD(itfnum, 2, stridx),\
   TUD_VIDEO_DESC_STD_VC(itfnum, 0, stridx),                                                                                                             \
       TUD_VIDEO_DESC_CS_VC(0x0110, (TUD_VIDEO_DESC_CS_VC_LEN + TUD_VIDEO_DESC_CAMERA_TERM_LEN + TUD_VIDEO_DESC_OUTPUT_TERM_LEN), 48000000, itfnum + 1), \
       TUD_VIDEO_DESC_CAMERA_TERM(1, 0, stridx, 0, 0, 0, 0),                                                                                             \
@@ -47,7 +47,7 @@ extern "C"
       TUD_VIDEO_DESC_CS_VS_FMT_MJPEG(1, 1, 1, 1, 0, 0, 0, 0),                                                                                           \
       TUD_VIDEO_DESC_CS_VS_FRM_MJPEG_CONT(1, 0, 640, 480, 640 * 480 * 3, 640 * 480 * 16 * 10, 640 * 480 / 2, 1000000, 1000000, 3333333, 0),             \
       TUD_VIDEO_DESC_CS_VS_COLOR_MATCHING(1, 1, 4),                                                                                                     \
-      TUD_VIDEO_DESC_EP_ISO(epin, epsize, 1)
+      TUD_VIDEO_DESC_EP_BULK(epin, epsize, 1)
 
   // USB Device Descriptor
   static const tusb_desc_device_t desc_device = {
@@ -77,8 +77,8 @@ extern "C"
       TUSB_DESC_CONFIG_ATT_REMOTE_WAKEUP,                                                          // Attributes
       250,                                                                                         // Max power (500mA / 2)
 
-      // UVC Descriptor
-      TUD_VIDEO_CAPTURE_DESC_UNCOMPR(ITF_NUM_VIDEO_CONTROL, 4, EPNUM_VIDEO_IN, 1023)};
+      // UVC Descriptor (BULK endpoint, FS max packet 64)
+      TUD_VIDEO_CAPTURE_DESC_UNCOMPR(ITF_NUM_VIDEO_CONTROL, 4, EPNUM_VIDEO_IN, 64)};
 
   // String Descriptors
   static const char *string_desc_arr[] = {

@@ -256,9 +256,10 @@ static void camera_task(void *pvParameters)
 }
 
 // TinyUSB Video Class callbacks
-extern "C" void tud_video_frame_complete_cb(uint_fast8_t ctl_idx)
+extern "C" void tud_video_frame_xfer_complete_cb(uint_fast8_t ctl_idx, uint_fast8_t stm_idx)
 {
     (void)ctl_idx;
+    (void)stm_idx;
     ESP_LOGD(TAG, "Video frame transfer complete");
 }
 
@@ -273,14 +274,8 @@ extern "C" int tud_video_commit_cb(uint_fast8_t ctl_idx, uint_fast8_t stm_idx, v
     return VIDEO_ERROR_NONE;
 }
 
-extern "C" int tud_video_uncomit_cb(uint_fast8_t ctl_idx)
-{
-    (void)ctl_idx;
-
-    ESP_LOGI(TAG, "UVC stream uncomit - Host stopped video stream");
-    uvc_streaming = false;
-    return VIDEO_ERROR_NONE;
-}
+// Note: TinyUSB UVC does not provide a specific "uncommit" callback.
+// Use tud_video_n_streaming() in the task loop and USB mount/unmount events.
 
 extern "C" void tud_mount_cb(void)
 {
@@ -290,6 +285,7 @@ extern "C" void tud_mount_cb(void)
 extern "C" void tud_umount_cb(void)
 {
     ESP_LOGI(TAG, "USB Device unmounted");
+    uvc_streaming = false;
 }
 
 // TinyUSB descriptor callbacks
@@ -420,18 +416,10 @@ extern "C" void app_main(void)
         return;
     }
     
-    // Initialize TinyUSB
-    ESP_LOGI(TAG, "Initializing USB...");
-    
-    // Initialize TinyUSB device stack
-    ret = ESP_OK;
+    // Initialize TinyUSB directly
+    ESP_LOGI(TAG, "Initializing USB (TinyUSB)...");
     if (!tud_init(BOARD_TUD_RHPORT)) {
         ESP_LOGE(TAG, "Failed to initialize TinyUSB device");
-        ret = ESP_FAIL;
-    }
-    
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to install TinyUSB driver");
         return;
     }
     
