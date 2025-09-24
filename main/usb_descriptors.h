@@ -10,44 +10,44 @@
 #include "class/video/video.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 // Video streaming endpoint
-#define EPNUM_VIDEO_IN    0x81
+#define EPNUM_VIDEO_IN 0x81
 
 // Video Interface numbers
-#define ITF_NUM_VIDEO_CONTROL     0
-#define ITF_NUM_VIDEO_STREAMING   1
-#define ITF_NUM_TOTAL             2
+#define ITF_NUM_VIDEO_CONTROL 0
+#define ITF_NUM_VIDEO_STREAMING 1
+#define ITF_NUM_TOTAL 2
 
 // UVC descriptor for USB Video Class
-#define TUD_VIDEO_CAPTURE_DESC_UNCOMPR_LEN (\
-  TUD_VIDEO_DESC_IAD_LEN +\
-  TUD_VIDEO_DESC_STD_VC_LEN +\
-  TUD_VIDEO_DESC_CS_VC_LEN + 1 +\
-  TUD_VIDEO_DESC_CAMERA_TERM_LEN +\
-  TUD_VIDEO_DESC_OUTPUT_TERM_LEN +\
-  TUD_VIDEO_DESC_STD_VS_LEN +\
-  TUD_VIDEO_DESC_CS_VS_IN_LEN + 1 +\
-  TUD_VIDEO_DESC_CS_VS_FMT_MJPEG_LEN +\
-  TUD_VIDEO_DESC_CS_VS_FRM_MJPEG_CONT_LEN +\
-  TUD_VIDEO_DESC_CS_VS_COLOR_MATCHING_LEN +\
-  7\
-)
+#define TUD_VIDEO_CAPTURE_DESC_UNCOMPR_LEN (  \
+    TUD_VIDEO_DESC_IAD_LEN +                  \
+    TUD_VIDEO_DESC_STD_VC_LEN +               \
+    TUD_VIDEO_DESC_CS_VC_LEN +                \
+    TUD_VIDEO_DESC_CAMERA_TERM_LEN +          \
+    TUD_VIDEO_DESC_OUTPUT_TERM_LEN +          \
+    TUD_VIDEO_DESC_STD_VS_LEN +               \
+    TUD_VIDEO_DESC_CS_VS_IN_LEN +             \
+    TUD_VIDEO_DESC_CS_VS_FMT_MJPEG_LEN +      \
+    TUD_VIDEO_DESC_CS_VS_FRM_MJPEG_CONT_LEN + \
+    TUD_VIDEO_DESC_CS_VS_COLOR_MATCHING_LEN + \
+    7)
 
-#define TUD_VIDEO_CAPTURE_DESC_UNCOMPR(itfnum, stridx, epin, epsize)                                                                            \
+#define TUD_VIDEO_CAPTURE_DESC_UNCOMPR(itfnum, stridx, epin, epsize)                                                                                    \
   TUD_VIDEO_DESC_IAD(itfnum, 2, stridx),\ 
-  TUD_VIDEO_DESC_STD_VC(itfnum, 0, stridx),                                                                                                     \
-      TUD_VIDEO_DESC_CS_VC(0x0110, TUD_VIDEO_DESC_CS_VC_LEN + 1, 48000000, itfnum + 1),                                                         \
-      TUD_VIDEO_DESC_CAMERA_TERM(1, 0, stridx, 0, 0, 0, 0),                                                                                     \
-      TUD_VIDEO_DESC_OUTPUT_TERM(2, VIDEO_TT_STREAMING, 0, 1, stridx),                                                                          \
-      TUD_VIDEO_DESC_STD_VS(itfnum + 1, 0, 0, stridx),                                                                                          \
-      TUD_VIDEO_DESC_CS_VS_INPUT(1, TUD_VIDEO_DESC_CS_VS_IN_LEN + 1, epin, 0, 2, 0, 0, 0, 1),                                                   \
-      TUD_VIDEO_DESC_CS_VS_FMT_MJPEG(1, 1, 1, 1, 0, 0, 0, 0),                                                                                   \
-      TUD_VIDEO_DESC_CS_VS_FRM_MJPEG_CONT(1, 0, 640, 480, 640 * 480 * 16, 640 * 480 * 16 * 30, 640 * 480 * 2, 333333, 333333, 1000000, 333333), \
-      TUD_VIDEO_DESC_CS_VS_COLOR_MATCHING(1, 1, 4),                                                                                             \
-      TUD_VIDEO_DESC_EP_BULK(epin, epsize, 1)
+  TUD_VIDEO_DESC_STD_VC(itfnum, 0, stridx),                                                                                                             \
+      TUD_VIDEO_DESC_CS_VC(0x0110, (TUD_VIDEO_DESC_CS_VC_LEN + TUD_VIDEO_DESC_CAMERA_TERM_LEN + TUD_VIDEO_DESC_OUTPUT_TERM_LEN), 48000000, itfnum + 1), \
+      TUD_VIDEO_DESC_CAMERA_TERM(1, 0, stridx, 0, 0, 0, 0),                                                                                             \
+      TUD_VIDEO_DESC_OUTPUT_TERM(2, VIDEO_TT_STREAMING, 0, 1, stridx),                                                                                  \
+      TUD_VIDEO_DESC_STD_VS(itfnum + 1, 0, 0, stridx),                                                                                                  \
+      TUD_VIDEO_DESC_CS_VS_INPUT(1, TUD_VIDEO_DESC_CS_VS_IN_LEN, epin, 0, 2, 0, 0, 0, 1),                                                               \
+      TUD_VIDEO_DESC_CS_VS_FMT_MJPEG(1, 1, 1, 1, 0, 0, 0, 0),                                                                                           \
+      TUD_VIDEO_DESC_CS_VS_FRM_MJPEG_CONT(1, 0, 640, 480, 640 * 480 * 3, 640 * 480 * 16 * 10, 640 * 480 / 2, 1000000, 1000000, 3333333, 0),             \
+      TUD_VIDEO_DESC_CS_VS_COLOR_MATCHING(1, 1, 4),                                                                                                     \
+      TUD_VIDEO_DESC_EP_ISO(epin, epsize, 1)
 
   // USB Device Descriptor
   static const tusb_desc_device_t desc_device = {
@@ -78,7 +78,7 @@ extern "C" {
       250,                                                                                         // Max power (500mA / 2)
 
       // UVC Descriptor
-      TUD_VIDEO_CAPTURE_DESC_UNCOMPR(ITF_NUM_VIDEO_CONTROL, 4, EPNUM_VIDEO_IN, 1024)};
+      TUD_VIDEO_CAPTURE_DESC_UNCOMPR(ITF_NUM_VIDEO_CONTROL, 4, EPNUM_VIDEO_IN, 1023)};
 
   // String Descriptors
   static const char *string_desc_arr[] = {
